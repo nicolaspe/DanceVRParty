@@ -9,6 +9,7 @@
 // global threejs variables
 let container, renderer, camera, scene;
 let controls, loader, effect;
+let pointLight, pointLight2;
 
 window.addEventListener('load', onLoad);
 
@@ -24,8 +25,15 @@ function onLoad(){
 	container.appendChild(renderer.domElement);
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color( 0x222222 );
-	camera = new THREE.PerspectiveCamera(80, wid/hei, 0.1, 1000);
-	camera.position.set(0, 0, 0);
+	camera = new THREE.PerspectiveCamera(100, wid/hei, 0.1, 1000);
+
+	dollyCam = new THREE.PerspectiveCamera();
+	dollyCam.add(camera);
+	scene.add(dollyCam);
+
+	dollyCam.position.set(0, -10, 20);
+	//dollyCam.target.set(0, -10, 0);
+	//camera.target.set(0,-10,0);
 
 	effect = new THREE.VREffect(renderer);
   effect.setSize(wid, hei);
@@ -81,6 +89,20 @@ function update(){
 	window.requestAnimationFrame(animate);
 }
 function animate(timestamp) {
+	let time = performance.now() * 0.009;
+	pointLight.position.x = Math.sin( time * 0.6 ) * 15;
+	pointLight.position.y = Math.sin( time * 0.7 ) * 15 + 5;
+	pointLight.position.z = Math.sin( time * 0.8 ) * 15;
+	pointLight.rotation.x = time;
+	pointLight.rotation.z = time;
+	time += 10000;
+
+	pointLight2.position.x = Math.sin( time * 0.6 ) * 9;
+	pointLight2.position.y = Math.sin( time * 0.7 ) * 9 + 5;
+	pointLight2.position.z = Math.sin( time * 0.8 ) * 9;
+	pointLight2.rotation.x = time;
+	pointLight2.rotation.z = time;
+
   if(vrDisplay.isPresenting){ // VR rendering
     controls.update();
     effect.render(scene, camera);
@@ -106,30 +128,70 @@ function createEnvironment(){
 	scene.add(skydome)
 
 	// SPHERES
-	let sp_geo  = new THREE.SphereGeometry(20, 12, 12);
-	let sp_mat1 = new THREE.MeshBasicMaterial({
-		color: 0x0000ff,
-		side: THREE.DoubleSide,
-	});
-	let sp_mat2 = new THREE.MeshLambertMaterial({
-		color: 0x00ff00,
-		side: THREE.DoubleSide,
-	})
+	// let sp_geo  = new THREE.SphereGeometry(20, 12, 12);
+	// let sp_mat1 = new THREE.MeshBasicMaterial({
+	// 	color: 0x0000ff,
+	// 	side: THREE.DoubleSide,
+	// });
+	// let sp_mat2 = new THREE.MeshLambertMaterial({
+	// 	color: 0x00ff00,
+	// 	side: THREE.DoubleSide,
+	// })
+  //
+	// var sphere1 = new THREE.Mesh(sp_geo, sp_mat1);
+	// sphere1.position.set(-200, 0, 0);
+	//scene.add(sphere1);
 
-	var sphere1 = new THREE.Mesh(sp_geo, sp_mat1);
-	sphere1.position.set(-200, 0, 0);
-	scene.add(sphere1);
+	let geometry = new THREE.BoxGeometry( 100, 100, 100 );
+	let boxMaterial = new THREE.MeshPhongMaterial( {
+					color: 0xa0adaf,
+					shininess: 10,
+					specular: 0x111111,
+					side: THREE.DoubleSide
+				} );
+	let cube = new THREE.Mesh( geometry, boxMaterial );
+	cube.receiveShadow = true;
+	scene.add( cube );
 
-	var sphere2 = new THREE.Mesh(sp_geo, sp_mat2);
-	sphere2.position.set(0, 0, -200);
-	scene.add(sphere2);
+	// var sphere2 = new THREE.Mesh(sp_geo, sp_mat2);
+	// sphere2.position.set(0, 0, -200);
+	// scene.add(sphere2);
 
 
 	// LIGHTS!
-	let d_light = new THREE.DirectionalLight(0xffffff, 1);
-	scene.add(d_light);
+	// scene.add( new THREE.AmbientLight( 0x3572B0) );
+	// let d_light = new THREE.DirectionalLight(0xffffff, 1);
+	// d_light.position =
+	// scene.add(d_light);
 
-	let p_light = new THREE.PointLight(0xff0000, 1.5, 1000, 2);
-	p_light.position.set(0, -100, -100);
-	scene.add(p_light);
+	pointLight = new THREE.PointLight(0xff0000, 1.5, 1000, 10);
+	pointLight.position.set(0, 0, 0);
+	let lightGeo1 = new THREE.SphereGeometry( 0.5, 50, 50 );
+	let lightMat1 = new THREE.MeshPhongMaterial( {
+		side: THREE.DoubleSide,
+		alphaTest: 0.5
+	} );
+	let lightMesh1 = new THREE.Mesh( lightGeo1, lightMat1 );
+	lightMesh1.castShadow = true;
+	lightMesh1.receiveShadow = true;
+	//pointLight.add( lightMesh1 );
+
+	scene.add(pointLight);
+
+	pointLight2 = new THREE.PointLight(0x0000D0, 1.5, 1000, 10);
+	pointLight2.position.set(0, 0, 0);
+	let lightGeo2 = new THREE.SphereGeometry( 0.5, 50, 50 );
+	let lightMat2 = new THREE.MeshPhongMaterial( {
+		side: THREE.DoubleSide,
+		alphaTest: 0.5
+	} );
+	let lightMesh2 = new THREE.Mesh( lightGeo2, lightMat2 );
+	lightMesh2.castShadow = true;
+	lightMesh2.receiveShadow = true;
+	//pointLight2.add( lightMesh2 );
+
+	scene.add(pointLight2);
+
+
+
 }
