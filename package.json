@@ -2,7 +2,7 @@
   "name": "dancevrparty",
   "version": "1.0.0",
   "description": "Unity web-based VR dance environment",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/nicolaspe/DanceVRParty/issues"
   },
-  "homepage": "https://github.com/nicolaspe/DanceVRParty#readme"
+  "homepage": "https://github.com/nicolaspe/DanceVRParty#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "http": "0.0.0",
+    "path": "^0.12.7",
+    "socket.io": "^2.0.4"
+  }
 }
